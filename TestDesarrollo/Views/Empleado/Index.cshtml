@@ -1,0 +1,182 @@
+﻿@*@model IEnumerable<TestDesarrollo.Models.Empleado>*@
+
+@{
+    ViewData["Title"] = "Index";
+}
+<head>
+    <link href="C:\Users\Luis Local\source\repos\TestDesarrollo\TestDesarrollo\Content\font-awesome.css" rel="stylesheet" />
+
+</head>
+<p>
+    <a>Listado Empleado</a>
+</p>
+
+<div class="btn-group pull-right mb-2">
+    <button type='button' class="btn btn-success" data-toggle="modal" data-target="#ModalPosicion" id="btnAddPosicion" onclick="FormaPosicion()">Nuevo Posicion</button>
+
+</div>
+<div class="btn-group pull-right mb-2">
+    <button type='button' class="btn btn-info" data-toggle="modal" data-target="#ModalAgregar" id="btnEmpleado" onclick="FormaEmpleado()">Nuevo Empleado</button>
+</div>
+
+<div class="modal fade" id="ModalAgregar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+        <div id="modal-content" class="modal-content">
+            <div id="modal-Empleado" class="modal-body">
+                cargando...
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="ModalEditar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modal-content" class="modal-content">
+            <div id="modal-Editar" class="modal-body">
+                cargando...
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalPosicion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div id="modal-content" class="modal-content">
+            <div id="modal-Posicion" class="modal-body">
+                cargando...
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="ModalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div id="modal-content" class="modal-content">
+            <div id="modal-Delete" class="modal-body">
+                cargando...
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                id
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Apellido
+            </th>
+
+            <th>
+                Fecha Nacimiento
+            </th>
+            <th>
+                Posicion
+            </th>
+            <th>
+                Accion
+            </th>
+        </tr>
+    </thead>
+    <tbody id="YourBodyId">
+     
+    </tbody>
+</table>
+
+<script>
+
+    function FormaPosicion()
+    {
+       
+        $("#modal-Posicion").load("/Empleado/AdPosicion");
+    }
+    function FormaEmpleado() {
+
+
+        $("#modal-Empleado").load("/Empleado/AddEmpleado");
+    }
+    function formEditar(id)
+    {
+     
+        $("#modal-Editar").load("/Empleado/EditEmpleado/" + id);
+    }
+    function formEliminar(id) {
+
+        $("#modal-Delete").load("/Empleado/DeleteEmp/" + id);
+    }
+
+    function CreateRows(datos) {
+
+            if (datos != null) {
+                var content = document.querySelector('#YourBodyId');
+
+                content.innerHTML = '';
+                for (let valor of datos) {
+               
+                    content.innerHTML += `
+                    <tr>
+                            <td>${valor.id}</td >
+                            <td>${valor.nombre}</td >
+                            <td>${valor.apellido}</td >
+                            <td>${valor.fechaNacimiento}</td >
+                            <td>${valor.posicion}</td >
+                            <td>
+                                <a href="#ModalDelete" class="btnDelete  btn btn-danger btn-sm pull-right" data-toggle="modal" data-id="${valor.id}" onclick="formEliminar('${valor.id}')">Eliminar</a>
+                                <a href="#ModalEditar" class="btnEditar  btn btn-success btn-sm fa-pull-right" data-toggle="modal" data-id="${valor.id}" onclick="formEditar('${valor.id}')">Editar</a>
+                            </td >
+
+                    </tr>
+
+                    `;
+                }
+            }
+
+    }
+        function GetData()
+        {
+         
+              $.ajax({
+
+                    url: '@Url.RouteUrl(new
+                     {
+                         controller = "Empleado",
+                         action = "GetListEmpleado"
+                     })',
+
+                    type: 'GET',
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                   success: function (data)
+                   {
+                    
+                       CreateRows(data);
+
+
+                    }
+
+           });
+    }
+</script>
+@section Scripts {
+    <script>
+      
+        $(document).ready(function () {
+            GetData();
+        });
+
+   
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,190 @@
+﻿
+
+@{
+    ViewData["Title"] = "AddEmpleado";
+    Layout = null;
+}
+
+
+
+
+<div class="PanelMod text-center mt-5 ">
+    <h4><a class=" fa fa-money"></a> Agregar Nuevo Empleado</h4>
+</div>
+<div class="row ">
+    <div class="col-lg-12 mx-auto">
+        <div class="form-group">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="number" class="form-control" id="txtid" value=@ViewBag.id hidden="hidden" />
+                        <label class="font-weight-bold">Nombre</label>
+                        <input type="text" id="txtNombre" class="form-control" placeholder="Nombre Empleado" required="required" />
+
+                        <div class="invalid-feedback">Este campo no puede estar vacio</div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold">Apellido</label>
+                        <input type="text" id="txtApellido" class="form-control" placeholder="Apellido Empleado" required="required" />
+                        <div class="invalid-feedback">Este campo no puede estar vacio</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold">Cedula</label>
+                        <input type="text" id="txtCedular" class="form-control" placeholder="Cedula .." required="required" />
+                        <div class="invalid-feedback">El campo cedula no puede estar Vacio</div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Fecha Nacimiento</label>
+                        <input type="date" id="txtFecha" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Telefono</label>
+                        <input type="text" id="txtTelefono" class="form-control" placeholder="Telefono .." />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold">Posicion</label>
+                        <select id="cbPosicion" class="form-control">
+                            <option>Selecion Posicion</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Direccion</label>
+                    <input type="text" id="txtDireccion" class="form-control" placeholder="Direccion" />
+                </div>
+
+
+
+                <div class="modal-footer">
+
+                    <button type="submit" id="btnAgregar" class="btn btn-primary mb-2" onclick="AgregarEmpleado()">Guardar</button>
+                    <button type="button" class="btn btn-danger mb-2" data-dismiss="modal">Cancelar</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function ()
+    {
+        ListOption();
+        GetDataEdit();
+
+    });
+    function ListOption()
+    {
+         $.ajax({
+                    url: '@Url.RouteUrl(new
+                     {
+                         controller = "Empleado",
+                         action = "GetListPosicion"
+                     })',
+
+                    type: 'GET',
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data)
+                    {
+
+                        GetListPosicion(data);
+
+                    }
+
+           });
+    }
+      function GetDataEdit()
+        {
+
+          $.ajax({
+              //txtid
+              data: { id: document.getElementById("txtid").value} ,
+                  url: '@Url.RouteUrl(new
+                             {
+                                 controller = "Empleado",
+                                 action = "GetDataEmpleado"
+                             })',
+
+                            type: 'GEST',
+                            //contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                        success: function (data) {
+                                document.getElementById("txtNombre").value = data.nombre;
+                                document.getElementById("txtApellido").value = data.apellido;
+                                document.getElementById("txtCedular").value = data.cedula;
+                                document.getElementById("txtFecha").text = data.fechaNacimiento;
+                                document.getElementById("cbPosicion").value = data.idPosicion;
+                                document.getElementById("txtTelefono").value = data.telefono;
+                                document.getElementById("txtDireccion").value = data.direccion;
+
+                            },
+                            error: function (data) {
+
+                                window.location.href = "../Empleado/index";
+                            }
+                        });
+
+
+        }
+    function GetListPosicion(data)
+    {
+        for (var i = 0; i < data.length; i++) {
+            var select = document.getElementById("cbPosicion");
+            var option = document.createElement("option");
+            option.text = data[i].descrpcion;
+            option.value = data[i].id;
+            select.add(option);
+        }
+   
+    }
+
+            function AgregarEmpleado()
+            {
+
+                var modelo = {
+                    id: document.getElementById("txtid").value,
+                    Nombre: document.getElementById("txtNombre").value,
+                    Apellido: document.getElementById("txtApellido").value,
+                    Cedula: document.getElementById("txtCedular").value,
+                    FechaNacimiento: document.getElementById("txtFecha").value,
+                    IdPosicion: document.getElementById("cbPosicion").value,
+                    Telefono: document.getElementById("txtTelefono").value,
+                    Direccion: document.getElementById("txtDireccion").value,
+
+                }
+
+                        $.ajax({
+
+                            data: modelo,
+                            url: '@Url.RouteUrl(new
+                             {
+                                 controller = "Empleado",
+                                 action = "EditEmpleado"
+                             })',
+
+                            type: 'POST',
+                            //contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+               
+
+                                window.location.href = "../Empleado/index";
+
+                            },
+                            error: function (data) {
+
+                                window.location.href = "../Empleado/index";
+                            }
+                        });
+            }
+</script>
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

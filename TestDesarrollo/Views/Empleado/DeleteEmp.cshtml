@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = "DeleteEmp";
+    Layout = null;
+}
+
+<div class="PanelMod text-center mt-5 ">
+    <h4><a class=" fa fa-money"></a>Esta Seguro que sea eliminar este empleado</h4>
+</div>
+<div class="row ">
+    <div class="col-lg-12 mx-auto">
+
+        <div class="form-group">
+
+            <form method="post">
+                <div class="card mt-1 mx-auto p-2 bg-light">
+                    <div class="form-row">
+                        <div class="form-group col-md-10">
+                            <input type="text" id="txtid" value=@ViewBag.id class="form-control" hidden="hidden" />
+                            <label  class="font-weight-bold" >Nombre</label>
+                            <input type="text" id="txtNombre" readonly = "readonly" class="form-control" required="required" maxlength="50" />
+
+                            <div class="invalid-feedback">Este campo no puede estar vacio</div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" id="btnEliminar" class="btn btn-success mb-2">Si</button>
+                    <button type="button" class="btn btn-danger mb-2" data-dismiss="modal">No</button>
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        GetDataEdit();
+
+    });
+    $('#btnEliminar').click(function () {
+
+        AplicarCambios();
+    });
+    function AplicarCambios()
+    {
+
+        var modelo = {
+            id: document.getElementById("txtid").value,
+            Nombre: document.getElementById("txtNombre").value,
+            Apellido: '',
+            Cedula: '',
+            FechaNacimiento: null,
+            IdPosicion: '',
+            Telefono: '',
+            Direccion: '',
+
+        }
+
+        var test = modelo;
+        $.ajax({
+
+            data: modelo,
+            url: '@Url.RouteUrl(new
+             {
+                 controller = "Empleado",
+                 action = "DeleteEmp"
+             })',
+
+            type: 'POST',
+            //contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                window.location.href = "../Empleado/index";
+
+            },
+            error: function (data) {
+
+                window.location.href = "../Empleado/index";
+            }
+        });
+
+    }
+        function GetDataEdit()
+        {
+
+          $.ajax({
+              //txtid
+              data: { id: document.getElementById("txtid").value} ,
+                  url: '@Url.RouteUrl(new
+                             {
+                                 controller = "Empleado",
+                                 action = "GetDataEmpleado"
+                             })',
+
+                            type: 'GEST',
+                            //contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                              success: function (data) {
+     
+                                  document.getElementById("txtNombre").value = data.nombre + ' ' + data.apellido;
+
+                            },
+                            error: function (data) {
+
+                                window.location.href = "../Empleado/index";
+                            }
+                        });
+
+
+        }
+</script>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
